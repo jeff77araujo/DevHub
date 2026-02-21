@@ -1,0 +1,19 @@
+# Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+DerivedData/
+*.xcuserstate
+
+# SPM
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# Secrets
+Config/Secrets.plist
+*.env
