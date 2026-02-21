@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9C6B36932F4A4708003F2133 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 9C6B36922F4A4708003F2133 /* FirebaseAnalytics */; };
+		9C6B36952F4A4708003F2133 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 9C6B36942F4A4708003F2133 /* FirebaseMessaging */; };
+		9C6B36982F4A4879003F2133 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 9C6B36972F4A4879003F2133 /* Alamofire */; };
+		9C6B369B2F4A48A8003F2133 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9C6B369A2F4A48A8003F2133 /* KeychainSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9C6B36752F4A4238003F2133 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +59,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C6B36982F4A4879003F2133 /* Alamofire in Frameworks */,
+				9C6B36952F4A4708003F2133 /* FirebaseMessaging in Frameworks */,
+				9C6B369B2F4A48A8003F2133 /* KeychainSwift in Frameworks */,
+				9C6B36932F4A4708003F2133 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +123,10 @@
 			);
 			name = DevHub;
 			packageProductDependencies = (
+				9C6B36922F4A4708003F2133 /* FirebaseAnalytics */,
+				9C6B36942F4A4708003F2133 /* FirebaseMessaging */,
+				9C6B36972F4A4879003F2133 /* Alamofire */,
+				9C6B369A2F4A48A8003F2133 /* KeychainSwift */,
 			);
 			productName = DevHub;
 			productReference = 9C6B36652F4A422E003F2133 /* DevHub.app */;
@@ -195,6 +210,11 @@
 			);
 			mainGroup = 9C6B365C2F4A422E003F2133;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9C6B36912F4A4708003F2133 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				9C6B36962F4A4879003F2133 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				9C6B36992F4A48A8003F2133 /* XCRemoteSwiftPackageReference "keychain-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9C6B36662F4A422E003F2133 /* Products */;
 			projectDirPath = "";
@@ -578,6 +598,56 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9C6B36912F4A4708003F2133 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.9.0;
+			};
+		};
+		9C6B36962F4A4879003F2133 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.11.1;
+			};
+		};
+		9C6B36992F4A48A8003F2133 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9C6B36922F4A4708003F2133 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9C6B36912F4A4708003F2133 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		9C6B36942F4A4708003F2133 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9C6B36912F4A4708003F2133 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		9C6B36972F4A4879003F2133 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9C6B36962F4A4879003F2133 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		9C6B369A2F4A48A8003F2133 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9C6B36992F4A48A8003F2133 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9C6B365D2F4A422E003F2133 /* Project object */;
 }
