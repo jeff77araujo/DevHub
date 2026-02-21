@@ -9,53 +9,61 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        ZStack {
+            // Background
+            AppTheme.Colors.background
+                .ignoresSafeArea()
+            
+            VStack(spacing: AppTheme.Spacing.large) {
+                // Logo/Título
+                VStack(spacing: AppTheme.Spacing.small) {
+                    Text("DevHub")
+                        .font(AppTheme.Typography.largeTitle)
+                        .foregroundColor(AppTheme.Colors.primary)
+                    
+                    Text("Explore GitHub Repositories")
+                        .font(AppTheme.Typography.body)
+                        .foregroundColor(AppTheme.Colors.System.secondaryLabel)
+                }
+                
+                // Card de Boas-vindas
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.medium) {
+                    Text("Bem-vindo!")
+                        .font(AppTheme.Typography.title2)
+                        .foregroundColor(AppTheme.Colors.System.label)
+                    
+                    Text("Descubra repositórios trending, siga desenvolvedores e fique por dentro do mundo open source.")
+                        .font(AppTheme.Typography.body)
+                        .foregroundColor(AppTheme.Colors.System.secondaryLabel)
+                    
+                    // Botão de exemplo
+                    Button(action: {
+                        print("Login tapped")
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.right.circle.fill")
+                            Text("Começar")
+                        }
+                        .font(AppTheme.Typography.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(AppTheme.Spacing.small)
+                        .background(AppTheme.Colors.primary)
+                        .cornerRadius(AppTheme.CornerRadius.medium)
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .padding(AppTheme.Spacing.large)
+                .cardStyle()
+                .padding(.horizontal, AppTheme.Spacing.large)
+                
+                Spacer()
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+            .padding(.top, AppTheme.Spacing.xxLarge)
         }
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
