@@ -15,7 +15,7 @@ struct DevHubApp: App {
     var body: some Scene {
         WindowGroup {
             if authService.isAuthenticated {
-                ContentView()
+                MainTabView()
                     .environmentObject(authService)
             } else {
                 LoginView()

@@ -16,11 +16,18 @@ final class ProfileViewModel: ObservableObject {
     
     private let userRepository: UserRepositoryProtocol
     
-    init(userRepository: UserRepositoryProtocol = UserRepository()) {
+    init(
+        userRepository: UserRepositoryProtocol = UserRepository(),
+        initialUser: User? = nil
+    ) {
         self.userRepository = userRepository
+        self.user = initialUser
     }
     
     func loadProfile() async {
+        // Se já tem user inicial (mock), não carrega
+        if user != nil { return }
+        
         isLoading = true
         errorMessage = nil
         

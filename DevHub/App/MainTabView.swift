@@ -1,30 +1,23 @@
-//
-//  ContentView.swift
-//  DevHub
-//
-//  Created by Jefferson Oliveira de Araujo on 21/02/26.
-//
-
 import SwiftUI
 
-struct ContentView: View {
+struct MainTabView: View {
     @EnvironmentObject private var authService: AuthService
     
     var body: some View {
         TabView {
-            ProfileView()
+            HomeView()
                 .tabItem {
-                    Label("Perfil", systemImage: "person.circle")
+                    Label("Home", systemImage: "house.fill")
                 }
             
             Text("Repositórios")
                 .tabItem {
-                    Label("Repos", systemImage: "folder")
+                    Label("Repos", systemImage: "folder.fill")
                 }
             
-            Text("Busca")
+            ProfileView()
                 .tabItem {
-                    Label("Busca", systemImage: "magnifyingglass")
+                    Label("Perfil", systemImage: "person.circle.fill")
                 }
         }
         .tint(AppTheme.Colors.primary)
@@ -32,6 +25,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    MainTabView()
         .environmentObject(AuthService())
 }
