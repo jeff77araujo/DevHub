@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9C499C222F4A81BE008EE3F0 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 9C499C212F4A81BE008EE3F0 /* Apollo */; };
+		9C499C242F4A81BE008EE3F0 /* ApolloAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 9C499C232F4A81BE008EE3F0 /* ApolloAPI */; };
 		9C6B36932F4A4708003F2133 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 9C6B36922F4A4708003F2133 /* FirebaseAnalytics */; };
 		9C6B36952F4A4708003F2133 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 9C6B36942F4A4708003F2133 /* FirebaseMessaging */; };
 		9C6B36982F4A4879003F2133 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 9C6B36972F4A4879003F2133 /* Alamofire */; };
@@ -72,6 +74,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C499C242F4A81BE008EE3F0 /* ApolloAPI in Frameworks */,
+				9C499C222F4A81BE008EE3F0 /* Apollo in Frameworks */,
 				9C6B36982F4A4879003F2133 /* Alamofire in Frameworks */,
 				9C6B36952F4A4708003F2133 /* FirebaseMessaging in Frameworks */,
 				9C6B369B2F4A48A8003F2133 /* KeychainSwift in Frameworks */,
@@ -140,6 +144,8 @@
 				9C6B36942F4A4708003F2133 /* FirebaseMessaging */,
 				9C6B36972F4A4879003F2133 /* Alamofire */,
 				9C6B369A2F4A48A8003F2133 /* KeychainSwift */,
+				9C499C212F4A81BE008EE3F0 /* Apollo */,
+				9C499C232F4A81BE008EE3F0 /* ApolloAPI */,
 			);
 			productName = DevHub;
 			productReference = 9C6B36652F4A422E003F2133 /* DevHub.app */;
@@ -227,6 +233,7 @@
 				9C6B36912F4A4708003F2133 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				9C6B36962F4A4879003F2133 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				9C6B36992F4A48A8003F2133 /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				9C499C202F4A81BE008EE3F0 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9C6B36662F4A422E003F2133 /* Products */;
@@ -615,6 +622,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		9C499C202F4A81BE008EE3F0 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.6;
+			};
+		};
 		9C6B36912F4A4708003F2133 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -642,6 +657,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		9C499C212F4A81BE008EE3F0 /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9C499C202F4A81BE008EE3F0 /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
+		9C499C232F4A81BE008EE3F0 /* ApolloAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9C499C202F4A81BE008EE3F0 /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = ApolloAPI;
+		};
 		9C6B36922F4A4708003F2133 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9C6B36912F4A4708003F2133 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
