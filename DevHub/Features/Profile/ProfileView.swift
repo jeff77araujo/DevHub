@@ -56,18 +56,6 @@ struct ProfileView: View {
 }
 
 // MARK: - Previews
-
-#Preview("Sucesso") {
-    NavigationStack {
-        ZStack {
-            AppTheme.Colors.background.ignoresSafeArea()
-            ProfileContent(user: User.mock, onLogout: {})
-        }
-        .navigationTitle("Perfil")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
 #Preview("Erro") {
     NavigationStack {
         ZStack {
@@ -86,9 +74,10 @@ struct ProfileView: View {
         }
         .navigationTitle("Perfil")
     }
+    .withAuth()
 }
 
-#Preview("Dark Mode") {
+#Preview("Sucesso - Light Mode") {
     NavigationStack {
         ZStack {
             AppTheme.Colors.background.ignoresSafeArea()
@@ -97,5 +86,18 @@ struct ProfileView: View {
         .navigationTitle("Perfil")
         .navigationBarTitleDisplayMode(.inline)
     }
+    .withAuth()
+}
+
+#Preview("Sucesso - Dark Mode") {
+    NavigationStack {
+        ZStack {
+            AppTheme.Colors.background.ignoresSafeArea()
+            ProfileContent(user: User.mock, onLogout: {})
+        }
+        .navigationTitle("Perfil")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    .withAuth()
     .preferredColorScheme(.dark)
 }

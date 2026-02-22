@@ -112,6 +112,15 @@ final class AuthService: NSObject, ObservableObject {
         keychainManager.clearAll()
         isAuthenticated = false
     }
+    
+    // MARK: - Preview Support
+    #if DEBUG
+    static func mock(authenticated: Bool = true) -> AuthService {
+        let service = AuthService()
+        service.isAuthenticated = authenticated
+        return service
+    }
+    #endif
 }
 
 // MARK: - ASWebAuthenticationPresentationContextProviding

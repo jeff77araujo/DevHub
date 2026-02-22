@@ -218,11 +218,11 @@ struct HomeView: View {
 
 #Preview("Light Mode") {
     HomeView()
-        .environmentObject(AuthService())
+        .withAuth()
 }
 
 #Preview("Dark Mode") {
     HomeView()
-        .environmentObject(AuthService())
+        .withAuth()
         .preferredColorScheme(.dark)
 }
