@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 internal import Combine
 
 @MainActor
@@ -55,14 +56,35 @@ final class ReposViewModel: ObservableObject {
         await fetchTrending()
     }
     
+    // MARK: - Update Favorite States
+    func updateFavoriteStates(modelContext: ModelContext) {
+        let favoritesService = FavoritesService(modelContext: modelContext)
+        
+        repositories = repositories.map { repo in
+            var mutableRepo = repo
+            mutableRepo.isFavorite = favoritesService.isFavorite(repoId: repo.id)
+            return mutableRepo
+        }
+    }
+    
     // MARK: - Toggle Favorite
-    func toggleFavorite(repository: Repository) {
+    func toggleFavorite(repository: Repository, modelContext: ModelContext) {
+        let favoritesService = FavoritesService(modelContext: modelContext)
+        
+        // Atualizar UI imediatamente
         if let index = repositories.firstIndex(where: { $0.id == repository.id }) {
             repositories[index].isFavorite.toggle()
             
-            // TODO: Salvar no SwiftData
-            print("Favorited: \(repositories[index].name) - \(repositories[index].isFavorite)")
+            // Salvar no SwiftData
+            do {
+                try favoritesService.toggleFavorite(repository)
+                print("✅ Favorito atualizado: \(repository.name) - \(repositories[index].isFavorite)")
+            } catch {
+                // Reverter se falhar
+                repositories[index].isFavorite.toggle()
+                errorMessage = "Erro ao favoritar: \(error.localizedDescription)"
+                print("❌ Erro ao favoritar: \(error)")
+            }
         }
     }
 }
-

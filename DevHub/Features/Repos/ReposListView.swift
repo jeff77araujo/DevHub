@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ReposListView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = ReposViewModel()
     
     var body: some View {
@@ -37,7 +39,10 @@ struct ReposListView: View {
                             icon: "arrow.clockwise",
                             color: nil,
                             action: {
-                                Task { await viewModel.fetchTrending() }
+                                Task {
+                                    await viewModel.fetchTrending()
+                                    viewModel.updateFavoriteStates(modelContext: modelContext)
+                                }
                             }
                         )
                     )
@@ -56,11 +61,13 @@ struct ReposListView: View {
                                 RepoCard(
                                     repository: repo,
                                     onTap: {
-                                        // TODO: Navegar para detalhes
                                         print("Tapped: \(repo.name)")
                                     },
                                     onFavorite: {
-                                        viewModel.toggleFavorite(repository: repo)
+                                        viewModel.toggleFavorite(
+                                            repository: repo,
+                                            modelContext: modelContext
+                                        )
                                     }
                                 )
                             }
@@ -69,18 +76,23 @@ struct ReposListView: View {
                     }
                     .refreshable {
                         await viewModel.refresh()
+                        viewModel.updateFavoriteStates(modelContext: modelContext)
                     }
                 }
             }
             .navigationTitle("Trending")
             .navigationBarTitleDisplayMode(.large)
-        }
-        .task {
-            await viewModel.fetchTrending()
+            .task {
+                await viewModel.fetchTrending()
+                viewModel.updateFavoriteStates(modelContext: modelContext)
+            }
         }
     }
 }
 
+// Previews mantém iguais...
+
+// MARK: - Previews (mantém os mesmos)
 #Preview("Com Dados") {
     let viewModel = ReposViewModel(
         reposService: MockGitHubReposService()
@@ -108,7 +120,7 @@ struct ReposListView: View {
     }
     .withAuth()
 }
-// MARK: - Previews
+
 #Preview("Loading") {
     NavigationStack {
         ZStack {
