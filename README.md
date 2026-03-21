@@ -476,26 +476,9 @@ func fetch(context: ModelContext) { }
 
 ## 👨‍💻 Autor
 
-**Jefferson Oliveira**
+**Jeff Araujo**
 
-- GitHub: [@jeffaraujo](https://github.com/jeffaraujo)
-- LinkedIn: [Jefferson Oliveira](https://linkedin.com/in/jefferson-oliveira)
-
----
-
-## 🙏 Agradecimentos
-
-- Apple Developer Documentation
-- GitHub API
-- Claude AI (pair programming)
-- Comunidade iOS Dev Brasil
+- GitHub: [@jeffaraujo](https://github.com/jeff77araujo)
+- LinkedIn: [Jeff Araujo](https://www.linkedin.com/in/jeff-araujo-dev/)
 
 ---
-
-<div align="center">
-
-**⭐ Se este projeto te ajudou nos estudos, deixa uma estrela!**
-
-**Feito com ❤️ e muito ☕**
-
-</div>
