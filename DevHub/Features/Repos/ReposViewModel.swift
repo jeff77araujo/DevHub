@@ -11,13 +11,16 @@ internal import Combine
 
 @MainActor
 final class ReposViewModel: ObservableObject {
+    // MARK: - Published Properties
     @Published var repositories: [Repository] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    private let reposService: GitHubReposServiceProtocol
+    // MARK: - Dependencies
+    private let reposService: GitHubReposService
     
-    init(reposService: GitHubReposServiceProtocol = GitHubReposService()) {
+    // MARK: - Initialization
+    init(reposService: GitHubReposService = GitHubReposService()) {
         self.reposService = reposService
     }
     
@@ -57,34 +60,37 @@ final class ReposViewModel: ObservableObject {
     }
     
     // MARK: - Update Favorite States
+    
+    /// Atualiza estados de favoritos comparando com SwiftData
     func updateFavoriteStates(modelContext: ModelContext) {
-        let favoritesService = FavoritesService(modelContext: modelContext)
+        let favoritesService = FavoritesService()
         
         repositories = repositories.map { repo in
             var mutableRepo = repo
-            mutableRepo.isFavorite = favoritesService.isFavorite(repoId: repo.id)
+            mutableRepo.isFavorite = favoritesService.isFavorite(
+                repoId: repo.id,
+                context: modelContext
+            )
             return mutableRepo
         }
     }
     
     // MARK: - Toggle Favorite
-    func toggleFavorite(repository: Repository, modelContext: ModelContext) {
-        let favoritesService = FavoritesService(modelContext: modelContext)
+    
+    func toggleFavorite(_ repository: Repository, modelContext: ModelContext) {
+        let favoritesService = FavoritesService()
         
-        // Atualizar UI imediatamente
-        if let index = repositories.firstIndex(where: { $0.id == repository.id }) {
-            repositories[index].isFavorite.toggle()
+        do {
+            try favoritesService.toggleFavorite(repository, context: modelContext)
+            print("✅ Favorito atualizado: \(repository.name)")
             
-            // Salvar no SwiftData
-            do {
-                try favoritesService.toggleFavorite(repository)
-                print("✅ Favorito atualizado: \(repository.name) - \(repositories[index].isFavorite)")
-            } catch {
-                // Reverter se falhar
+            // Atualizar UI imediatamente
+            if let index = repositories.firstIndex(where: { $0.id == repository.id }) {
                 repositories[index].isFavorite.toggle()
-                errorMessage = "Erro ao favoritar: \(error.localizedDescription)"
-                print("❌ Erro ao favoritar: \(error)")
+                print("  - \(repositories[index].isFavorite)")
             }
+        } catch {
+            print("❌ Erro ao favoritar: \(error)")
         }
     }
 }

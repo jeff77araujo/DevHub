@@ -49,12 +49,17 @@ final class FavoriteRepository {
     }
     
     // MARK: - Converter para Repository
-    func toRepository() -> Repository {
-        Repository(
+    func toRepository() -> Repository? {
+        guard let validURL = URL(string: url) else {
+            print("⚠️ URL inválida: \(url)")
+            return nil
+        }
+        
+        return Repository(
             id: id,
             name: name,
             description: repoDescription,
-            url: URL(string: url)!,
+            url: validURL,
             stargazerCount: stargazerCount,
             forkCount: forkCount,
             language: language,

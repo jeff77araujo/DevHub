@@ -28,7 +28,8 @@ struct ReposListView: View {
                         }
                         .padding()
                     }
-                } else if let error = viewModel.errorMessage, viewModel.repositories.isEmpty {
+                } else if let error = viewModel.errorMessage,
+                          viewModel.repositories.isEmpty {
                     // Erro
                     EmptyState(
                         icon: "exclamationmark.triangle",
@@ -65,7 +66,7 @@ struct ReposListView: View {
                                     },
                                     onFavorite: {
                                         viewModel.toggleFavorite(
-                                            repository: repo,
+                                            repo,
                                             modelContext: modelContext
                                         )
                                     }
@@ -90,16 +91,16 @@ struct ReposListView: View {
     }
 }
 
-// Previews mantém iguais...
+// MARK: - Previews
 
-// MARK: - Previews (mantém os mesmos)
 #Preview("Com Dados") {
-    let viewModel = ReposViewModel(
-        reposService: MockGitHubReposService()
-    )
-    viewModel.repositories = Repository.mocks
+    let _ = {
+        let vm = ReposViewModel()
+        vm.repositories = Repository.mocks
+        return vm
+    }()
     
-    return NavigationStack {
+    NavigationStack {
         ZStack {
             AppTheme.Colors.background.ignoresSafeArea()
             
@@ -141,9 +142,7 @@ struct ReposListView: View {
 }
 
 #Preview("Dark Mode") {
-    let viewModel = ReposViewModel(
-        reposService: MockGitHubReposService()
-    )
+    let viewModel = ReposViewModel()  // ✅ CORRIGIDO: Sem MockGitHubReposService
     viewModel.repositories = Repository.mocks
     
     return NavigationStack {

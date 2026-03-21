@@ -6,20 +6,24 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainTabView: View {
-    @EnvironmentObject private var authService: AuthService
-    
     var body: some View {
         TabView {
             HomeView()
                 .tabItem {
-                    Label("Home", systemImage: "house.fill")
+                    Label("Início", systemImage: "house.fill")
                 }
             
             ReposListView()
                 .tabItem {
-                    Label("Repos", systemImage: "folder.fill")
+                    Label("Repositórios", systemImage: "folder.fill")
+                }
+            
+            FavoritesView()
+                .tabItem {
+                    Label("Favoritos", systemImage: "star.fill")
                 }
             
             ProfileView()
@@ -31,20 +35,23 @@ struct MainTabView: View {
     }
 }
 
-// MARK: - Previews
-#Preview("Light Mode") {
+#Preview("Light") {
     MainTabView()
-        .environmentObject(AuthService.mock(authenticated: true))
+        .withAuth()
+        .modelContainer(for: FavoriteRepository.self, inMemory: true)
 }
 
-#Preview("Dark Mode") {
+#Preview("Dark") {
     MainTabView()
-        .environmentObject(AuthService.mock(authenticated: true))
+        .withAuth()
+        .modelContainer(for: FavoriteRepository.self, inMemory: true)
         .preferredColorScheme(.dark)
 }
 
 #Preview("Com Dados Mockados") {
-    MockedTabView()
+    MainTabView()
+        .withAuth()
+        .modelContainer(for: FavoriteRepository.self, inMemory: true)
 }
 
 // MARK: - Helper para Preview com Dados
@@ -53,7 +60,7 @@ private struct MockedTabView: View {
     @StateObject private var profileVM: ProfileViewModel
     
     init() {
-        let repos = ReposViewModel(reposService: MockGitHubReposService())
+        let repos = ReposViewModel()
         repos.repositories = Repository.mocks
         _reposVM = StateObject(wrappedValue: repos)
         

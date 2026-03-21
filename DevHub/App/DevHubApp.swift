@@ -17,6 +17,7 @@ struct DevHubApp: App {
         let schema = Schema([
             FavoriteRepository.self
         ])
+        
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false

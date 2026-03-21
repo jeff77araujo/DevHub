@@ -10,59 +10,61 @@ import SwiftData
 
 @MainActor
 final class FavoritesService {
-    private let modelContext: ModelContext
-    
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
+        
+    init() {}
     
     // MARK: - Check if Favorite
-    func isFavorite(repoId: String) -> Bool {
+    
+    func isFavorite(repoId: String, context: ModelContext) -> Bool {
         let descriptor = FetchDescriptor<FavoriteRepository>(
             predicate: #Predicate { $0.id == repoId }
         )
         
-        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
+        let count = (try? context.fetchCount(descriptor)) ?? 0
         return count > 0
     }
     
     // MARK: - Add Favorite
-    func addFavorite(_ repository: Repository) throws {
+    
+    func addFavorite(_ repository: Repository, context: ModelContext) throws {
         let favorite = repository.toFavorite()
-        modelContext.insert(favorite)
-        try modelContext.save()
+        context.insert(favorite)
+        try context.save()
     }
     
     // MARK: - Remove Favorite
-    func removeFavorite(repoId: String) throws {
+    
+    func removeFavorite(repoId: String, context: ModelContext) throws {
         let descriptor = FetchDescriptor<FavoriteRepository>(
             predicate: #Predicate { $0.id == repoId }
         )
         
-        guard let favorite = try modelContext.fetch(descriptor).first else {
+        guard let favorite = try context.fetch(descriptor).first else {
             return
         }
         
-        modelContext.delete(favorite)
-        try modelContext.save()
+        context.delete(favorite)
+        try context.save()
     }
     
     // MARK: - Toggle Favorite
-    func toggleFavorite(_ repository: Repository) throws {
-        if isFavorite(repoId: repository.id) {
-            try removeFavorite(repoId: repository.id)
+    
+    func toggleFavorite(_ repository: Repository, context: ModelContext) throws {
+        if isFavorite(repoId: repository.id, context: context) {
+            try removeFavorite(repoId: repository.id, context: context)
         } else {
-            try addFavorite(repository)
+            try addFavorite(repository, context: context)
         }
     }
     
     // MARK: - Fetch All Favorites
-    func fetchAllFavorites() throws -> [Repository] {
+    
+    func fetchAllFavorites(context: ModelContext) throws -> [Repository] {
         let descriptor = FetchDescriptor<FavoriteRepository>(
             sortBy: [SortDescriptor(\.favoritedAt, order: .reverse)]
         )
         
-        let favorites = try modelContext.fetch(descriptor)
-        return favorites.map { $0.toRepository() }
+        let favorites = try context.fetch(descriptor)
+        return favorites.compactMap { $0.toRepository() }
     }
 }
