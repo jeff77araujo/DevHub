@@ -11,25 +11,15 @@ import SwiftData
 struct MainTabView: View {
     var body: some View {
         TabView {
-            HomeView()
-                .tabItem {
-                    Label("Início", systemImage: "house.fill")
-                }
+            HomeView().tabItem { Label("Início", systemImage: "house.fill") }
             
-            ReposListView()
-                .tabItem {
-                    Label("Repositórios", systemImage: "folder.fill")
-                }
+            ReposListView().tabItem { Label("Repositórios", systemImage: "folder.fill") }
             
-            FavoritesView()
-                .tabItem {
-                    Label("Favoritos", systemImage: "star.fill")
-                }
+            SearchView().tabItem { Label("Buscar", systemImage: "magnifyingglass") }
             
-            ProfileView()
-                .tabItem {
-                    Label("Perfil", systemImage: "person.circle.fill")
-                }
+            FavoritesView().tabItem { Label("Favoritos", systemImage: "star.fill") }
+            
+            ProfileView().tabItem { Label("Perfil", systemImage: "person.circle.fill") }
         }
         .tint(AppTheme.Colors.primary)
     }

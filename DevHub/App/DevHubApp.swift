@@ -15,7 +15,8 @@ struct DevHubApp: App {
     // SwiftData ModelContainer
     let modelContainer: ModelContainer = {
         let schema = Schema([
-            FavoriteRepository.self
+            FavoriteRepository.self,
+            SearchHistory.self
         ])
         
         let modelConfiguration = ModelConfiguration(

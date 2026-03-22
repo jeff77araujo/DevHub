@@ -25,7 +25,7 @@
 
 ## 🎯 Sobre o Projeto
 
-**DevHub** é um cliente GitHub para iOS que permite visualizar repositórios trending, favoritar repos offline, buscar e filtrar, ver perfil e autenticar via OAuth 2.0.
+**DevHub** é um cliente GitHub para iOS que permite visualizar repositórios, favoritar repos offline, buscar e filtrar com histórico persistente, ver perfil e autenticar via OAuth 2.0.
 
 Este projeto foi desenvolvido com foco em **aprendizado técnico** e **boas práticas**, servindo como **material de estudos** para iOS Development.
 
@@ -57,6 +57,17 @@ Este projeto foi desenvolvido com foco em **aprendizado técnico** e **boas prá
 - [x] Empty states
 - [x] **FIX:** Crash EXC_BAD_ACCESS
 
+### ✅ Sprint 4.2: Busca de Repositórios (3h)
+- [x] SearchView com debounce (500ms)
+- [x] Integração GraphQL Search API
+- [x] Filtros avançados (linguagem, stars, ordenação)
+- [x] Histórico de buscas (SwiftData)
+- [x] 5 estados de UI (empty/loading/results/error/no-results)
+- [x] Badge de filtros ativos
+- [x] **FIX:** SearchFilters não encontrado
+- [x] **FIX:** Decodificação JSON
+- [x] **FIX:** Repository incompatível
+
 ---
 
 ## 🛠️ Stack Técnica
@@ -65,7 +76,7 @@ Este projeto foi desenvolvido com foco em **aprendizado técnico** e **boas prá
 - Swift 5.9
 - SwiftUI 5.0
 - SwiftData (iOS 17+)
-- Combine
+- Combine (Debounce)
 - Firebase/Auth
 - Alamofire
 - KeychainSwift
@@ -159,6 +170,24 @@ query {
 → 1 request, dados exatos
 ```
 
+**Search API do GitHub:**
+```graphql
+query SearchRepositories($searchQuery: String!) {
+  search(query: $searchQuery, type: REPOSITORY, first: 30) {
+    repositoryCount
+    edges {
+      node {
+        ... on Repository {
+          id
+          name
+          stargazerCount
+        }
+      }
+    }
+  }
+}
+```
+
 ---
 
 ### 3️⃣ SwiftData - Persistência Moderna
@@ -182,6 +211,15 @@ try context.save()
 ```
 
 **70% menos código!**
+
+**Sprint 4.2 - Múltiplos Modelos:**
+```swift
+// DevHubApp.swift
+let schema = Schema([
+    FavoriteRepository.self,
+    SearchHistory.self  // ← Novo!
+])
+```
 
 ---
 
@@ -305,30 +343,91 @@ Text("Título")
 
 ---
 
+### 9️⃣ Combine - Debounce para Performance
+
+**Problema:** Buscar a cada tecla = spam na API
+
+**Solução:**
+```swift
+$searchText
+    .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
+    .removeDuplicates()
+    .sink { query in
+        Task {
+            await performSearch(query: query)
+        }
+    }
+    .store(in: &cancellables)
+```
+
+**Resultado:** Só busca 500ms DEPOIS que o usuário parou de digitar!
+
+---
+
+### 🔟 Tratamento de Erros GraphQL
+
+**Problema:** API retorna `"errors"` mas código tentava decodificar `"data"` → crash
+
+**Solução:**
+```swift
+// 1. Verificar se há erro ANTES de decodificar
+if let errors = json["errors"] as? [[String: Any]] {
+    let messages = errors.compactMap { $0["message"] as? String }
+    throw ServiceError.networkError(messages.joined(separator: ", "))
+}
+
+// 2. SÓ AGORA decodificar
+let response = try decoder.decode(Response.self, from: data)
+```
+
+**Logs detalhados:**
+```swift
+print("📡 Status code: \(httpResponse.statusCode)")
+print("📄 JSON bruto: \(jsonString.prefix(500))...")
+print("❌ Erro GraphQL: \(errorMessages)")
+```
+
+---
+
 ## 🚀 Como Rodar
 
 ### 1. Clone o projeto
 ```bash
-git clone https://github.com/seu-usuario/DevHub.git
+git clone https://github.com/jeff77araujo/DevHub.git
+cd DevHub
 ```
 
 ### 2. Configure OAuth App no GitHub
-- https://github.com/settings/developers
-- New OAuth App
-- Callback: `devhub://callback`
+- Acesse: https://github.com/settings/developers
+- Clique em **New OAuth App**
+- Preencha:
+  - **Application name:** DevHub
+  - **Homepage URL:** https://github.com/jeff77araujo/DevHub
+  - **Authorization callback URL:** `devhub://callback`
+- Copie **Client ID** e **Client Secret**
 
 ### 3. Adicione credenciais
+Crie o arquivo `Secrets.swift` em `DevHub/Core/Security/`:
+
 ```swift
 // Secrets.swift
 enum Secrets {
-    static let githubClientId = "SEU_CLIENT_ID"
-    static let githubClientSecret = "SEU_CLIENT_SECRET"
+    static let githubClientId = "SEU_CLIENT_ID_AQUI"
+    static let githubClientSecret = "SEU_CLIENT_SECRET_AQUI"
 }
 ```
 
-### 4. Rode
+⚠️ **IMPORTANTE:** Este arquivo está no `.gitignore` por segurança!
+
+### 4. Instale dependências
 ```bash
+# SPM instala automaticamente ao abrir o projeto
 open DevHub.xcodeproj
+```
+
+### 5. Rode o projeto
+```bash
+# No Xcode:
 Cmd + R
 ```
 
@@ -346,23 +445,45 @@ DevHub/
 │   │   ├── Secrets.swift
 │   │   └── KeychainManager.swift
 │   ├── Repositories/
+│   │   ├── GitHubReposService.swift
+│   │   └── GitHubSearchService.swift  ← Sprint 4.2
 │   └── Services/
+│       └── FavoritesService.swift
 │
 ├── Features/
 │   ├── Auth/
+│   │   ├── AuthService.swift
+│   │   └── LoginView.swift
 │   ├── Home/
+│   │   └── HomeView.swift
 │   ├── Profile/
+│   │   ├── ProfileViewModel.swift
+│   │   └── ProfileView.swift
 │   ├── Repos/
-│   └── Favorites/
+│   │   ├── ReposViewModel.swift
+│   │   └── ReposListView.swift
+│   ├── Favorites/
+│   │   ├── FavoritesViewModel.swift
+│   │   └── FavoritesView.swift
+│   └── Search/  ← Sprint 4.2
+│       ├── SearchViewModel.swift
+│       ├── SearchView.swift
+│       └── SearchFiltersView.swift
 │
 ├── Models/
 │   ├── User.swift
 │   ├── Repository.swift
-│   └── FavoriteRepository.swift
+│   ├── FavoriteRepository.swift
+│   ├── SearchHistory.swift  ← Sprint 4.2
+│   └── SearchFilters.swift  ← Sprint 4.2
 │
 ├── UI/
 │   ├── Components/
+│   │   ├── RepoCard.swift
+│   │   ├── ProfileHeader.swift
+│   │   └── EmptyStateView.swift
 │   └── Theme/
+│       └── AppTheme.swift
 │
 └── MainTabView.swift
 ```
@@ -410,58 +531,170 @@ func fetch(context: ModelContext) { }
 
 ---
 
+### Problema 3: SearchFilters não encontrado (Sprint 4.2)
+
+**Erro:**
+```
+Cannot find type 'SearchFilters' in scope
+```
+
+**Causa:** Arquivo `SearchFilters.swift` não foi criado na primeira versão.
+
+**Solução:**
+Criar modelo completo com enums:
+```swift
+struct SearchFilters {
+    var language: String?
+    var minStars: Int?
+    var sortBy: SortOption
+    
+    enum Language: String, CaseIterable {
+        case all = ""
+        case swift = "Swift"
+        case python = "Python"
+        // ...
+    }
+    
+    enum StarsFilter: Int, CaseIterable {
+        case any = 0
+        case oneK = 1000
+        case fiveK = 5000
+        // ...
+    }
+}
+```
+
+---
+
+### Problema 4: Erro de Decodificação JSON (Sprint 4.2)
+
+**Erro:**
+```
+keyNotFound(CodingKeys(stringValue: "data", intValue: nil))
+```
+
+**Causa:** API retornava `"errors"` mas código tentava decodificar `"data"` direto.
+
+**Solução:**
+```swift
+// 1. Verificar erros ANTES
+if let errors = json["errors"] as? [[String: Any]] {
+    let errorMessages = errors.compactMap { $0["message"] as? String }
+    throw ServiceError.networkError(errorMessages.joined(separator: ", "))
+}
+
+// 2. SÓ AGORA decodificar
+let searchResponse = try decoder.decode(SearchRepositoriesResponse.self, from: data)
+```
+
+**Logs adicionados:**
+- Status HTTP
+- JSON bruto (primeiros 500 chars)
+- Mensagens de erro GraphQL
+- Debug detalhado de `DecodingError`
+
+---
+
+### Problema 5: Repository incompatível (Sprint 4.2)
+
+**Erro:**
+```
+Extra arguments at positions #3, #10 in call
+Missing argument for parameter 'url' in call
+Cannot find 'Owner' in scope
+```
+
+**Causa:** Inicializador do `Repository` era diferente do esperado pelo search.
+
+**Solução:**
+Ajustar mapeamento no `GitHubSearchService`:
+```swift
+let repo = Repository(
+    id: edge.node.id,
+    name: edge.node.name,
+    owner: edge.node.owner.login,  // String, não struct Owner
+    ownerAvatarURL: edge.node.owner.avatarUrl,
+    description: edge.node.description,
+    url: edge.node.url,
+    language: edge.node.primaryLanguage?.name,
+    languageColor: edge.node.primaryLanguage?.color,
+    stargazersCount: edge.node.stargazerCount,
+    forksCount: edge.node.forkCount,
+    updatedAt: edge.node.updatedAt
+)
+```
+
+---
+
 ### Decisões Técnicas
 
 **GraphQL Manual vs Apollo:**
 - ✅ Queries simples
 - ✅ Menos dependências
+- ✅ Controle total
 - ❌ Apollo tem setup complexo
 
 **SwiftData vs CoreData:**
 - ✅ 70% menos código
 - ✅ Type-safe
+- ✅ Macros automáticas
 - ❌ iOS 17+ apenas
 
 **MVVM vs VIPER:**
 - ✅ Padrão SwiftUI
 - ✅ Testável
+- ✅ Menos boilerplate
 - ❌ VIPER é overkill
+
+**Debounce 500ms vs Tempo Real:**
+- ✅ Evita spam na API
+- ✅ Melhor UX (não fica "piscando")
+- ✅ Rate limit do GitHub
+- ❌ Delay mínimo (imperceptível)
 
 ---
 
 ## 🔜 Próximos Passos
 
-### Sprint 4.2: Busca (2-3h)
-- [ ] SearchView
-- [ ] Filtros
-- [ ] Histórico
-
-### Sprint 4.3: Detalhes (3-4h)
+### Sprint 4.3: Detalhes do Repositório (3-4h)
 - [ ] RepoDetailView
-- [ ] README rendering
-- [ ] Issues/PRs
+- [ ] README rendering (Markdown)
+- [ ] Issues count
+- [ ] Contributors
+- [ ] Linguagens (gráfico)
 
-### Sprint 5: Testes (2-3h)
-- [ ] Unit tests
-- [ ] UI tests
-- [ ] CI/CD
+### Sprint 5: Testes Unitários (2-3h)
+- [ ] Unit tests (ViewModels)
+- [ ] Mock services
+- [ ] Coverage 80%+
+- [ ] CI/CD setup
 
-### Sprint 6: UX (2-4h)
-- [ ] Pagination
-- [ ] Cache
-- [ ] Animações
+### Sprint 6: Melhorias UX (2-4h)
+- [ ] Pagination (infinite scroll)
+- [ ] Cache de imagens
+- [ ] Animações (skeleton loading)
+- [ ] Dark mode otimizado
+- [ ] Haptic feedback
 
 ---
 
 ## 📊 Estatísticas
 
 ```
-📝 Linhas de Código:    ~3.200+
-📁 Arquivos:            45+
-🎨 Componentes:         7
-📱 Telas:               7
-⏱️ Tempo:               ~12h
+📝 Linhas de Código:    ~4.400+
+📁 Arquivos:            55+
+🎨 Componentes:         9
+📱 Telas:               9
+⏱️ Tempo:               ~15h
+🐛 Bugs Corrigidos:     15
 ```
+
+**Sprint 4.2 adicionou:**
+- +600 linhas de código
+- +8 arquivos
+- +2 componentes (SearchView, SearchFiltersView)
+- +3h desenvolvimento
+- +5 bugs corrigidos
 
 ---
 
@@ -470,7 +703,9 @@ func fetch(context: ModelContext) { }
 - [SwiftUI Tutorials](https://developer.apple.com/tutorials/swiftui)
 - [SwiftData Docs](https://developer.apple.com/documentation/swiftdata)
 - [GitHub GraphQL](https://docs.github.com/graphql)
+- [GitHub Search API](https://docs.github.com/graphql/reference/queries#search)
 - [Hacking with Swift](https://www.hackingwithswift.com)
+- [Combine Framework](https://developer.apple.com/documentation/combine)
 
 ---
 
@@ -478,7 +713,5 @@ func fetch(context: ModelContext) { }
 
 **Jeff Araujo**
 
-- GitHub: [@jeffaraujo](https://github.com/jeff77araujo)
+- GitHub: [@jeff77araujo](https://github.com/jeff77araujo)
 - LinkedIn: [Jeff Araujo](https://www.linkedin.com/in/jeff-araujo-dev/)
-
----
